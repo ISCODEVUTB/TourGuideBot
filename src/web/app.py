@@ -1,6 +1,4 @@
-import os
 from pathlib import Path
-
 from flask import Flask, render_template, request, url_for
 from sentence_transformers import SentenceTransformer, util, InputExample, losses
 from torch.utils.data import DataLoader
@@ -82,17 +80,17 @@ def index():
         query = request.form.get("query", "").strip()
         if query:
             # Embedding de la consulta
-            q_emb = model.encode(query, convert_to_tensor=True)
-            scores = util.pytorch_cos_sim(q_emb, doc_embeddings)[0]
-            top_k = 3
-            top_idxs = np.argsort(-scores.cpu().numpy())[:top_k]
+            q_emb = model.encode(query, convert_to_tensor=True)  # Embedding de la consulta
+            scores = util.pytorch_cos_sim(q_emb, doc_embeddings)[0] # Calcula similitudes
+            top_k = 3  #numero de bsuquedas a mostrar
+            top_idxs = np.argsort(-scores.cpu().numpy())[:top_k]  # seleccion de los mejores resultados
 
             # Verifica existencia en disco (debug)
             for idx in top_idxs:
                 nombre = imagenes[idx]
                 path = BASE_DIR / "static" / STATIC_IMGS_SUBFOLDER / nombre
                 if not path.exists():
-                    print(f"⚠️ No existe en disco: {path}")
+                    print(f" No existe en disco: {path}")
 
             # Construye resultados con URL a static
             for i in top_idxs:
